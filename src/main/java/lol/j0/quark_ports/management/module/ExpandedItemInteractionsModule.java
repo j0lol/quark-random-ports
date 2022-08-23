@@ -1,6 +1,5 @@
 package lol.j0.quark_ports.management.module;
 
-import lol.j0.quark_ports.QuarkPorts;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
@@ -25,6 +24,7 @@ public class ExpandedItemInteractionsModule {
 			Items.PURPLE_SHULKER_BOX, Items.LIGHT_GRAY_SHULKER_BOX, Items.PINK_SHULKER_BOX, Items.LIME_SHULKER_BOX,
 			Items.LIGHT_BLUE_SHULKER_BOX, Items.MAGENTA_SHULKER_BOX, Items.ORANGE_SHULKER_BOX, Items.WHITE_SHULKER_BOX)
 	);
+	// todo: make a proper api for this stuff
 	public static final ArrayList<Item> FIREPROOF_ITEMS = new ArrayList<>(Arrays.asList(
 			Items.NETHERITE_AXE, Items.NETHERITE_BLOCK, Items.NETHERITE_BOOTS, Items.NETHERITE_HOE,
 			Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_INGOT, Items.NETHERITE_LEGGINGS,
@@ -32,25 +32,22 @@ public class ExpandedItemInteractionsModule {
 			Items.ANCIENT_DEBRIS, Items.LODESTONE)
 	);
 
-	// can you call kotlin from mixins? unsure
 
-	public static void hookFromOnClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir) {
-		addToShulker(stack, cursorStackReference.get(), slot, clickType, player, cursorStackReference, cir, false);
+	public static void hookFromOnClicked(ItemStack stack, Slot slot, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir) {
+		addToShulker(stack, cursorStackReference.get(), slot, cursorStackReference, cir, false);
 
 	}
-	public static void hookFromOnStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-		addToShulker(stack, slot.getStack(), slot, clickType, player, StackReference.EMPTY, cir, true);
+	public static void hookFromOnStackClicked(ItemStack stack, Slot slot, CallbackInfoReturnable<Boolean> cir) {
+		addToShulker(stack, slot.getStack(), slot, StackReference.EMPTY, cir, true);
 	}
-	public static void addToShulker(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir, boolean stackClicked) {
+	public static void addToShulker(ItemStack stack, ItemStack otherStack, Slot slot, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir, boolean stackClicked) {
 		var items = stack.getOrCreateNbt().getCompound("BlockEntityTag").getList("Items", NbtElement.COMPOUND_TYPE);
 
 		ItemStack[] inventorySlots = new ItemStack[27];
 
 		for (NbtElement x : items) {
 			var item = (NbtCompound) x;
-			QuarkPorts.LOGGER.info(String.valueOf(item));
 			var itemSlot = item.getByte("Slot");
-			QuarkPorts.LOGGER.info(String.valueOf(itemSlot));
 			if ( itemSlot < 27 && itemSlot >= 0 ) {
 				inventorySlots[item.getByte("Slot")] = ItemStack.fromNbt(item);
 			}
@@ -81,9 +78,6 @@ public class ExpandedItemInteractionsModule {
 
 		for (int i = 0; i < inventoryStacks.length; i++) {
 
-			QuarkPorts.LOGGER.info(String.valueOf(i));
-			QuarkPorts.LOGGER.info(Arrays.toString(inventoryStacks));
-
 			ItemStack inventoryStack = inventoryStacks[i];
 
 			if (inventoryStack == null) {
@@ -108,9 +102,6 @@ public class ExpandedItemInteractionsModule {
 
 		for (int i = 0; i < inventoryStacks.length; i++) {
 
-			QuarkPorts.LOGGER.info(String.valueOf(i));
-			QuarkPorts.LOGGER.info(Arrays.toString(inventoryStacks));
-
 			ItemStack inventoryStack = inventoryStacks[i];
 
 			if (inventoryStack == null) {
@@ -131,7 +122,7 @@ public class ExpandedItemInteractionsModule {
 		return inventoryStacks;
 	}
 
-	public static void tryDestroyItem(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir) {
+	public static void tryDestroyItem(ClickType clickType, PlayerEntity player, StackReference cursorStackReference, CallbackInfoReturnable<Boolean> cir) {
 		if (clickType == ClickType.RIGHT) {
 			player.playSound(SoundEvents.BLOCK_LAVA_EXTINGUISH);
 			cursorStackReference.set(ItemStack.EMPTY);

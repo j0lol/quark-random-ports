@@ -13,6 +13,14 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
@@ -29,6 +37,14 @@ dependencies {
 	// Quilted Fabric API will automatically pull in the correct QSL version.
 	modImplementation libs.quilted.fabric.api
 	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
+
+	// For debugging
+	modLocalRuntime "maven.modrinth:emi:0.3.1+1.19"
+	modLocalRuntime "maven.modrinth:modmenu:4.0.6"
+	modLocalRuntime "maven.modrinth:nbt-editor:1.7.0"
+//	modLocalRuntime "maven.modrinth:shulkerboxtooltip:3.1.2+1.19.2-fabric"
+//	modLocalRuntime "maven.modrinth:cloth-config:8.0.75+fabric"
+
 }
 
 processResources {
