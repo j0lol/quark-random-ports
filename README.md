@@ -1,6 +1,6 @@
 # Quark Ports
 
-Hi! These are my personal quark ports in Quilt using java. I'll port to kotlin eventually so it can be merged with the other quark port.
+Hi! These are my quark ports in Quilt using java. I'll port to kotlin eventually so it can be merged with the other quark port.
 
 ## Port list
 - [ ] Management
